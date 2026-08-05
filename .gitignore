@@ -1,0 +1,13 @@
+venv/
+.env
+__pycache__/
+*.pyc
+
+database/studymate.db
+
+outputs/
+
+vector_store/
+
+.ipynb_checkpoints/
+

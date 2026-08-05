@@ -1,0 +1,124 @@
+/* ============================= */
+/* AI StudyMate - Professional UI */
+/* ============================= */
+
+/* Main App */
+body {
+    background-color: #F5F7FA;
+}
+
+.main {
+    background-color: #F5F7FA;
+}
+
+/* Main Container */
+.block-container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    max-width: 1200px;
+}
+
+/* Sidebar */
+section[data-testid="stSidebar"] {
+    background-color: #1E293B;
+}
+
+section[data-testid="stSidebar"] * {
+    color: white;
+}
+
+/* Buttons */
+.stButton > button {
+    width: 100%;
+    background: linear-gradient(90deg, #4CAF50, #2196F3);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.stButton > button:hover {
+    transform: scale(1.02);
+    box-shadow: 0px 4px 12px rgba(0,0,0,0.25);
+}
+
+/* Text Inputs */
+.stTextInput input {
+    border-radius: 10px;
+    border: 1px solid #CCCCCC;
+}
+
+/* Selectbox */
+.stSelectbox > div > div {
+    border-radius: 10px;
+}
+
+/* File Uploader */
+section[data-testid="stFileUploader"] {
+    border-radius: 12px;
+}
+
+/* Metrics */
+[data-testid="stMetric"] {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0px 3px 8px rgba(0,0,0,0.10);
+}
+
+/* Success Messages */
+[data-testid="stAlert"] {
+    border-radius: 10px;
+}
+
+/* Tables */
+table {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* Headings */
+h1 {
+    color: #1565C0;
+}
+
+h2 {
+    color: #1976D2;
+}
+
+h3 {
+    color: #2E7D32;
+}
+
+/* Horizontal Line */
+hr {
+    border: none;
+    height: 2px;
+    background: linear-gradient(to right, #4CAF50, #2196F3);
+}
+
+/* Download Buttons */
+.stDownloadButton > button {
+    width: 100%;
+    background: #1565C0;
+    color: white;
+    border-radius: 10px;
+    border: none;
+    font-weight: bold;
+}
+
+.stDownloadButton > button:hover {
+    background: #0D47A1;
+}
+
+/* Radio Buttons */
+[data-testid="stRadio"] {
+    padding: 5px;
+}
+
+/* Progress Bar */
+.stProgress > div > div {
+    background: linear-gradient(90deg, #4CAF50, #2196F3);
+}
