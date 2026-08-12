@@ -49,7 +49,7 @@ function Repositories() {
         placeholder="🔍 Search repositories..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="w-full rounded-xl bg-slate-900 border border-slate-700 p-4 mb-8 text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500"
+        className="w-full rounded-xl bg-slate-900 border border-slate-700 p-4 mb-8 text-white placeholder:text-slate-500"
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -58,17 +58,17 @@ function Repositories() {
 
           <div
             key={repo.name}
-            className="bg-slate-900 border border-slate-700 rounded-xl p-6 hover:border-blue-500 hover:shadow-xl transition-all duration-300"
+            className="bg-slate-900 border border-slate-700 rounded-xl p-6 hover:border-blue-500 transition"
           >
 
             <div className="flex justify-between items-start">
 
-              <h2 className="text-2xl font-bold text-white break-all">
+              <h2 className="text-2xl font-bold text-white">
                 {repo.name}
               </h2>
 
               <span
-                className={`px-3 py-1 rounded-full text-sm font-medium ${
+                className={`px-3 py-1 rounded-full text-sm ${
                   repo.private
                     ? "bg-red-500/20 text-red-400"
                     : "bg-green-500/20 text-green-400"
@@ -79,30 +79,48 @@ function Repositories() {
 
             </div>
 
-            <div className="mt-5 space-y-3">
+            <div className="mt-5 space-y-2">
 
               <p className="text-slate-300">
-                👤 <span className="font-semibold">Owner:</span>{" "}
-                {repo.owner}
+                👤 Owner: {repo.owner}
               </p>
 
               <p className="text-slate-300">
-                💻 <span className="font-semibold">Language:</span>{" "}
-                {repo.language || "Not Specified"}
+                💻 Language: {repo.language || "Not Specified"}
               </p>
 
-              <p className="text-yellow-400 font-semibold">
+              <p className="text-yellow-400">
                 ⭐ {repo.stars} Stars
               </p>
 
             </div>
 
-            <Link
+            <div className="flex flex-wrap gap-3 mt-6">
+
+              <Link
                 to={`/repository/${repo.owner}/${repo.name}`}
-                className="inline-block mt-6 bg-blue-600 hover:bg-blue-700 px-5 py-3 rounded-lg text-white font-semibold transition"
-            >
-                View Details →
-            </Link>
+                className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-white"
+              >
+                View Details
+              </Link>
+
+              <Link
+                to={`/pullrequests?owner=${repo.owner}&repo=${repo.name}`}
+                className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-white"
+              >
+                Pull Requests
+              </Link>
+
+              <a
+                href={repo.url}
+                target="_blank"
+                rel="noreferrer"
+                className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-white"
+              >
+                GitHub
+              </a>
+
+            </div>
 
           </div>
 
@@ -114,12 +132,12 @@ function Repositories() {
 
         <div className="text-center mt-20">
 
-          <h2 className="text-2xl font-bold text-slate-300">
+          <h2 className="text-2xl text-slate-300">
             No Repository Found
           </h2>
 
           <p className="text-slate-500 mt-3">
-            Try searching with another repository name.
+            Try another repository name.
           </p>
 
         </div>

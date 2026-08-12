@@ -1,11 +1,44 @@
+const API = "http://127.0.0.1:8000";
+
+// ---------------- Repositories ----------------
+
 export async function getRepositories() {
-  const response = await fetch("http://127.0.0.1:8000/github/repositories");
+  const response = await fetch(`${API}/github/repositories`);
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch repositories.");
+  }
+
   return response.json();
 }
 
-export async function getPullRequests(owner: string, repo: string) {
+// ---------------- Pull Requests ----------------
+
+export async function getPullRequests(
+  owner: string,
+  repo: string
+) {
   const response = await fetch(
-    `http://127.0.0.1:8000/github/pulls/${owner}/${repo}`
+    `${API}/github/pulls/${owner}/${repo}`
   );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch pull requests.");
+  }
+
+  return response.json();
+}
+
+// ---------------- Profile ----------------
+
+export async function getProfile() {
+  const response = await fetch(
+    `${API}/github/profile`
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch profile.");
+  }
+
   return response.json();
 }

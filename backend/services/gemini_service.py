@@ -1,36 +1,38 @@
+import json
+
 from google import genai
+
 from config import GEMINI_API_KEY
 
 
 class GeminiService:
 
     def __init__(self):
-        self.client = genai.Client(api_key=GEMINI_API_KEY)
+        self.client = genai.Client(
+            api_key=GEMINI_API_KEY
+        )
 
     def review_code(self, code):
 
         prompt = f"""
-You are an expert Senior Software Engineer.
+You are a Senior Software Engineer.
 
 Review the following code.
 
-Return the response in exactly this format:
+Return ONLY valid JSON.
 
-Overall Score: <score>/100
+Example:
 
-Bugs:
-- ...
-
-Security:
-- ...
-
-Performance:
-- ...
-
-Summary:
-...
+{{
+    "score":95,
+    "bugs":["Bug 1"],
+    "security":["Security Issue"],
+    "performance":["Performance Issue"],
+    "summary":"Short summary"
+}}
 
 Code:
+
 {code}
 """
 
@@ -39,4 +41,47 @@ Code:
             contents=prompt,
         )
 
-        return response.text
+        text = response.text.strip()
+
+        text = (
+            text
+            .replace("```json", "")
+            .replace("```", "")
+            .strip()
+        )
+
+        try:
+            return json.loads(text)
+
+        except Exception:
+
+            return {
+                "score": 0,
+                "bugs": ["Unable to parse Gemini response."],
+                "security": [],
+                "performance": [],
+                "summary": text
+            }
+    # ---------------- GET PROFILE ----------------
+
+def get_profile(self):
+
+    if not self.github:
+        return {
+            "error": "GitHub token not configured."
+        }
+
+    user = self.get_user()
+
+    return {
+        "login": user.login,
+        "name": user.name,
+        "bio": user.bio,
+        "avatar": user.avatar_url,
+        "followers": user.followers,
+        "following": user.following,
+        "public_repos": user.public_repos,
+        "profile": user.html_url,
+        "company": user.company,
+        "location": user.location
+    }

@@ -15,11 +15,37 @@ class GitHubService:
     def get_user(self):
         if not self.github:
             return None
+
         return self.github.get_user()
+
+    # ---------------- GET PROFILE ----------------
+
+    def get_profile(self):
+
+        if not self.github:
+            return {
+                "error": "GitHub token not configured."
+            }
+
+        user = self.get_user()
+
+        return {
+            "login": user.login,
+            "name": user.name,
+            "bio": user.bio,
+            "avatar": user.avatar_url,
+            "followers": user.followers,
+            "following": user.following,
+            "public_repos": user.public_repos,
+            "company": user.company,
+            "location": user.location,
+            "profile": user.html_url
+        }
 
     # ---------------- GET REPOSITORIES ----------------
 
     def get_repositories(self):
+
         if not self.github:
             return {
                 "error": "GitHub token not configured."
@@ -30,6 +56,7 @@ class GitHubService:
         repository_list = []
 
         for repo in repos:
+
             repository_list.append({
                 "name": repo.name,
                 "owner": repo.owner.login,
@@ -40,55 +67,6 @@ class GitHubService:
             })
 
         return repository_list
-
-    # ---------------- GET PULL REQUESTS ----------------
-
-    def get_pull_requests(self, owner, repo):
-
-        if not self.github:
-            return {
-                "error": "GitHub token not configured."
-            }
-
-        repository = self.github.get_repo(f"{owner}/{repo}")
-
-        pulls = repository.get_pulls(state="open")
-
-        pull_requests = []
-
-        for pr in pulls:
-            pull_requests.append({
-                "number": pr.number,
-                "title": pr.title,
-                "author": pr.user.login,
-                "state": pr.state,
-                "created_at": str(pr.created_at),
-                "url": pr.html_url
-            })
-
-        return pull_requests
-
-    # ---------------- GET PULL REQUEST FILES ----------------
-
-    def get_pull_request_files(self, owner, repo_name, pr_number):
-
-        if not self.github:
-            return []
-
-        repo = self.github.get_repo(f"{owner}/{repo_name}")
-
-        pull = repo.get_pull(pr_number)
-
-        files = []
-
-        for file in pull.get_files():
-            files.append({
-                "filename": file.filename,
-                "status": file.status,
-                "patch": file.patch
-            })
-
-        return files
 
     # ---------------- GET REPOSITORY DETAILS ----------------
 
@@ -149,3 +127,100 @@ class GitHubService:
             count += 1
 
         return commit_list
+
+    # ---------------- GET PULL REQUESTS ----------------
+
+    def get_pull_requests(self, owner, repo):
+
+        if not self.github:
+            return {
+                "error": "GitHub token not configured."
+            }
+
+        repository = self.github.get_repo(f"{owner}/{repo}")
+
+        pulls = repository.get_pulls(state="open")
+
+        pull_requests = []
+
+        for pr in pulls:
+
+            pull_requests.append({
+                "number": pr.number,
+                "title": pr.title,
+                "author": pr.user.login,
+                "state": pr.state,
+                "created_at": str(pr.created_at),
+                "url": pr.html_url
+            })
+
+        return pull_requests
+
+    # ---------------- GET PULL REQUEST FILES ----------------
+
+    def get_pull_request_files(self, owner, repo_name, pr_number):
+
+        if not self.github:
+            return []
+
+        repo = self.github.get_repo(f"{owner}/{repo_name}")
+
+        pull = repo.get_pull(pr_number)
+
+        files = []
+
+        for file in pull.get_files():
+
+            files.append({
+                "filename": file.filename,
+                "status": file.status,
+                "patch": file.patch
+            })
+
+        return files
+
+    # ---------------- GET REPOSITORY STRUCTURE ----------------
+
+    def get_repository_structure(self, owner, repo_name):
+
+        if not self.github:
+            return []
+
+        repo = self.github.get_repo(f"{owner}/{repo_name}")
+
+        contents = repo.get_contents("")
+
+        files = []
+
+        while contents:
+
+            file = contents.pop(0)
+
+            if file.type == "dir":
+
+                try:
+                    contents.extend(repo.get_contents(file.path))
+                except Exception:
+                    pass
+
+            else:
+
+                try:
+                    # Skip binary or large files
+                    if file.size > 500000:
+                        continue
+
+                    content = file.decoded_content.decode(
+                        "utf-8",
+                        errors="ignore"
+                    )
+
+                    files.append({
+                        "filename": file.path,
+                        "patch": content[:3000]
+                    })
+
+                except Exception:
+                    pass
+
+        return files

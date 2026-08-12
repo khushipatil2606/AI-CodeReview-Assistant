@@ -5,6 +5,7 @@ import requests
 from config import (
     GITHUB_CLIENT_ID,
     GITHUB_CLIENT_SECRET,
+    FRONTEND_URL
 )
 
 router = APIRouter(
@@ -12,6 +13,8 @@ router = APIRouter(
     tags=["Authentication"]
 )
 
+
+# ---------------- GitHub Login ----------------
 
 @router.get("/github/login")
 def github_login():
@@ -24,6 +27,8 @@ def github_login():
 
     return RedirectResponse(github_url)
 
+
+# ---------------- GitHub Callback ----------------
 
 @router.get("/github/callback")
 def github_callback(code: str):
@@ -40,4 +45,15 @@ def github_callback(code: str):
         }
     )
 
-    return response.json()
+    token = response.json()
+
+    access_token = token.get("access_token")
+
+    if not access_token:
+        return {
+            "error": "GitHub authentication failed."
+        }
+
+    return RedirectResponse(
+        url=f"{FRONTEND_URL}/dashboard?token={access_token}"
+    )
