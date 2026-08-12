@@ -7,6 +7,15 @@ from database.models import Base
 from routes.review import router as review_router
 from database.database import engine
 from database.models import Base
+from routes.dashboard import router as dashboard_router
+from routes.architecture import router as architecture_router
+from routes.dependency import router as dependency_router
+from routes.security import router as security_router
+from routes.bugfix import router as bugfix_router
+from routes import code_quality
+from routes import explain
+from routes import chat
+from routes import dependency
 Base.metadata.create_all(bind=engine)
 from config import GITHUB_TOKEN
 
@@ -17,9 +26,18 @@ app = FastAPI(
 )
 Base.metadata.create_all(bind=engine)
 # 👇 Add this line here
+app.include_router(dashboard_router)
 app.include_router(github_router)
 app.include_router(review_router)
 app.include_router(auth_router)
+app.include_router(architecture_router)
+app.include_router(dependency_router)
+app.include_router(security_router)
+app.include_router(bugfix_router)
+app.include_router(code_quality.router)
+app.include_router(explain.router)
+app.include_router(chat.router)
+
 # Allow React frontend to communicate with FastAPI
 app.add_middleware(
     CORSMiddleware,

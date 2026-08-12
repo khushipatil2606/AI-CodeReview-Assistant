@@ -1,75 +1,70 @@
-# React + TypeScript + Vite
+# 🤖 AI Code Review Assistant
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An AI-powered GitHub code review platform that analyzes repositories using Generative AI and provides insights about code quality, security, architecture, dependencies, bugs, and performance.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- 🔍 AI Code Review
+- 🐞 Bug Detection & Fix Suggestions
+- 🔐 Security Analysis
+- 📦 Dependency Analysis
+- 🏗️ Architecture Analysis
+- ✨ Code Quality Analysis
+- 🤖 AI File Explanation
+- 📊 GitHub Analytics
+- 📜 Review History
+- 📄 PDF Report Export
+- 📝 DOCX Report Export
+- 🔗 GitHub Repository Integration
 
-## React Compiler
+## 🛠️ Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Frontend
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- React Router
+- Axios
+- Chart.js
+- Recharts
 
-## Expanding the ESLint configuration
+### Backend
+- Python
+- FastAPI
+- Uvicorn
+- PyGithub
+- Google Gemini API
+- SQLAlchemy
+- SQLite
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### AI
+- Google Gemini
+- Generative AI based code analysis
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 📁 Project Structure
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
-```
+```text
+AI-CodeReview-Assistant/
+│
+├── backend/
+│   ├── routes/
+│   ├── services/
+│   ├── prompts/
+│   ├── models/
+│   ├── database/
+│   ├── app.py
+│   ├── config.py
+│   └── requirements.txt
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   └── layouts/
+│   ├── package.json
+│   └── vite.config.ts
+│
+├── .gitignore
+└── README.md

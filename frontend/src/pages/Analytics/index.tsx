@@ -1,21 +1,37 @@
 import { useEffect, useState } from "react";
 import {
-  PieChart,
-  Pie,
-  Cell,
+  Chart as ChartJS,
+  ArcElement,
+  BarElement,
+  CategoryScale,
+  LinearScale,
   Tooltip,
-  ResponsiveContainer,
-  BarChart,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Bar,
-} from "recharts";
+  Legend,
+} from "chart.js";
+
+import { Pie, Bar } from "react-chartjs-2";
+
+ChartJS.register(
+  ArcElement,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend
+);
 
 interface AnalyticsData {
   repositories: number;
   stars: number;
   top_language: string;
+}
+
+interface ReviewStatistics {
+  total_reviews: number;
+  average_score: number;
+  total_bugs: number;
+  total_security: number;
+  total_performance: number;
 }
 
 function Analytics() {
@@ -25,31 +41,66 @@ function Analytics() {
     top_language: "Loading...",
   });
 
+  const [stats, setStats] = useState<ReviewStatistics>({
+    total_reviews: 0,
+    average_score: 0,
+    total_bugs: 0,
+    total_security: 0,
+    total_performance: 0,
+  });
+
   useEffect(() => {
     fetch("http://127.0.0.1:8000/github/analytics")
       .then((res) => res.json())
       .then((data) => setAnalytics(data))
-      .catch((err) => console.error(err));
+      .catch(console.error);
+
+    fetch("http://127.0.0.1:8000/review/statistics")
+      .then((res) => res.json())
+      .then((data) => setStats(data))
+      .catch(console.error);
   }, []);
 
-  // Demo chart data
-  const languageData = [
-    { name: analytics.top_language, value: analytics.repositories },
-    { name: "Others", value: 1 },
-  ];
+  const pieData = {
+    labels: ["Bugs", "Security", "Performance"],
+    datasets: [
+      {
+        data: [
+          stats.total_bugs,
+          stats.total_security,
+          stats.total_performance,
+        ],
+        backgroundColor: [
+          "#ef4444",
+          "#facc15",
+          "#22c55e",
+        ],
+      },
+    ],
+  };
 
-  const repoData = [
-    {
-      name: "Repositories",
-      value: analytics.repositories,
-    },
-    {
-      name: "Stars",
-      value: analytics.stars,
-    },
-  ];
-
-  const COLORS = ["#3B82F6", "#10B981"];
+  const barData = {
+    labels: [
+      "Repositories",
+      "Stars",
+      "Reviews",
+    ],
+    datasets: [
+      {
+        label: "Statistics",
+        data: [
+          analytics.repositories,
+          analytics.stars,
+          stats.total_reviews,
+        ],
+        backgroundColor: [
+          "#3b82f6",
+          "#facc15",
+          "#22c55e",
+        ],
+      },
+    ],
+  };
 
   return (
     <div className="p-8 bg-slate-950 min-h-screen">
@@ -58,107 +109,79 @@ function Analytics() {
         GitHub Analytics
       </h1>
 
-      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-
-        <div className="bg-slate-900 border border-slate-700 rounded-xl p-6">
-          <h2 className="text-slate-400 text-lg">
+        <div className="bg-slate-900 rounded-xl p-6">
+          <h2 className="text-slate-400">
             Repositories
           </h2>
 
-          <p className="text-5xl font-bold text-blue-400 mt-4">
+          <p className="text-5xl text-blue-400 font-bold mt-4">
             {analytics.repositories}
           </p>
         </div>
 
-        <div className="bg-slate-900 border border-slate-700 rounded-xl p-6">
-          <h2 className="text-slate-400 text-lg">
-            Total Stars
+        <div className="bg-slate-900 rounded-xl p-6">
+          <h2 className="text-slate-400">
+            Stars
           </h2>
 
-          <p className="text-5xl font-bold text-yellow-400 mt-4">
+          <p className="text-5xl text-yellow-400 font-bold mt-4">
             ⭐ {analytics.stars}
           </p>
         </div>
 
-        <div className="bg-slate-900 border border-slate-700 rounded-xl p-6">
-          <h2 className="text-slate-400 text-lg">
+        <div className="bg-slate-900 rounded-xl p-6">
+          <h2 className="text-slate-400">
             Top Language
           </h2>
 
-          <p className="text-3xl font-bold text-green-400 mt-4">
+          <p className="text-2xl text-green-400 font-bold mt-4">
             {analytics.top_language}
+          </p>
+        </div>
+
+        <div className="bg-slate-900 rounded-xl p-6">
+          <h2 className="text-slate-400">
+            Average Review Score
+          </h2>
+
+          <p className="text-5xl text-cyan-400 font-bold mt-4">
+            {stats.average_score}
           </p>
         </div>
 
       </div>
 
-      {/* Charts */}
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-        {/* Pie Chart */}
-
-        <div className="bg-slate-900 rounded-xl p-6 border border-slate-700">
+        <div className="bg-slate-900 rounded-xl p-6">
 
           <h2 className="text-white text-2xl font-bold mb-6">
-            Language Distribution
+            AI Review Distribution
           </h2>
 
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-
-              <Pie
-                data={languageData}
-                dataKey="value"
-                outerRadius={110}
-                label
-              >
-                {languageData.map((entry, index) => (
-                  <Cell
-                    key={index}
-                    fill={COLORS[index % COLORS.length]}
-                  />
-                ))}
-              </Pie>
-
-              <Tooltip />
-
-            </PieChart>
-          </ResponsiveContainer>
+          <Pie data={pieData} />
 
         </div>
 
-        {/* Bar Chart */}
-
-        <div className="bg-slate-900 rounded-xl p-6 border border-slate-700">
+        <div className="bg-slate-900 rounded-xl p-6">
 
           <h2 className="text-white text-2xl font-bold mb-6">
-            Repository Statistics
+            GitHub Statistics
           </h2>
 
-          <ResponsiveContainer width="100%" height={300}>
-
-            <BarChart data={repoData}>
-
-              <CartesianGrid strokeDasharray="3 3" />
-
-              <XAxis dataKey="name" />
-
-              <YAxis />
-
-              <Tooltip />
-
-              <Bar
-                dataKey="value"
-                fill="#3B82F6"
-                radius={[8, 8, 0, 0]}
-              />
-
-            </BarChart>
-
-          </ResponsiveContainer>
+          <Bar
+            data={barData}
+            options={{
+              responsive: true,
+              plugins: {
+                legend: {
+                  display: false,
+                },
+              },
+            }}
+          />
 
         </div>
 

@@ -11,16 +11,24 @@ class AIReviewService:
         code = ""
 
         for file in files:
+
             code += f"\n\nFile: {file['filename']}\n"
 
             if file.get("patch"):
-                code += file["patch"]
+                patch = file["patch"]
+
+                # Limit code size
+                code += patch[:2000]
 
         if not code.strip():
-            code = "No code changes available."
+            code = "No code changes."
 
         result = self.gemini.review_code(code)
 
         return {
-            "review": result
+            "score": result.get("score", 0),
+            "bugs": result.get("bugs", []),
+            "security": result.get("security", []),
+            "performance": result.get("performance", []),
+            "summary": result.get("summary", "")
         }
