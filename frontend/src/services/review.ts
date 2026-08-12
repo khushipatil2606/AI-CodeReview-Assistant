@@ -1,4 +1,4 @@
-const API = "http://127.0.0.1:8000";
+const API = import.meta.env.VITE_API_URL;
 
 export async function getAIReview(
   owner: string,
@@ -28,13 +28,15 @@ export async function getReviewHistory() {
 
   return await response.json();
 }
+
 export async function getReviewStatistics() {
-    const response = await fetch(
-        "http://127.0.0.1:8000/review/statistics"
-    );
+  const response = await fetch(
+    `${API}/review/statistics`
+  );
 
-    if (!response.ok)
-        throw new Error("Failed to fetch statistics");
+  if (!response.ok) {
+    throw new Error("Failed to fetch statistics");
+  }
 
-    return response.json();
+  return response.json();
 }
