@@ -1,5 +1,12 @@
 import { useEffect } from "react";
-import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import {
+  Routes,
+  Route,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
+
+import { saveGitHubToken } from "./services/auth";
 
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -24,110 +31,171 @@ import MainLayout from "./layouts/MainLayout";
 
 
 function App() {
+
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Save GitHub OAuth token after login
+  // ---------------- Save GitHub OAuth Token ----------------
+
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const token = params.get("token");
 
-    if (token) {
-      localStorage.setItem("github_token", token);
+    const tokenSaved = saveGitHubToken();
 
-      // Remove token from the browser URL
-      navigate(location.pathname, { replace: true });
+    if (tokenSaved) {
+      navigate("/dashboard", {
+        replace: true,
+      });
     }
-  }, [location, navigate]);
+
+  }, [location.search, navigate]);
+
 
   return (
     <Routes>
 
-      {/* Login */}
-      <Route path="/" element={<Login />} />
+      {/* ---------------- Login ---------------- */}
 
-      {/* Main Layout */}
-      <Route element={<MainLayout />}>
+      <Route
+        path="/"
+        element={<Login />}
+      />
+
+
+      {/* ---------------- Main Layout ---------------- */}
+
+      <Route
+        element={<MainLayout />}
+      >
+
+        {/* Dashboard */}
 
         <Route
           path="/dashboard"
           element={<Dashboard />}
         />
 
+
+        {/* Repositories */}
+
         <Route
           path="/repositories"
           element={<Repositories />}
         />
 
-        <Route
-          path="/quality"
-          element={<Quality />}
-        />
+
+        {/* Repository Details */}
 
         <Route
           path="/repository/:owner/:repo"
           element={<RepositoryDetails />}
         />
 
-        <Route
-          path="/security"
-          element={<Security />}
-        />
 
-        <Route
-          path="/commits/:owner/:repo"
-          element={<Commits />}
-        />
-
-        <Route
-          path="/bugfix"
-          element={<BugFix />}
-        />
-
-        <Route
-          path="/explain"
-          element={<Explain />}
-        />
+        {/* Pull Requests */}
 
         <Route
           path="/pullrequests"
           element={<PullRequests />}
         />
 
+
+        {/* Commits */}
+
         <Route
-          path="/dependency"
-          element={<Dependency />}
+          path="/commits/:owner/:repo"
+          element={<Commits />}
         />
+
+
+        {/* AI Review */}
 
         <Route
           path="/review"
           element={<Review />}
         />
 
+
+        {/* Analytics */}
+
         <Route
           path="/analytics"
           element={<Analytics />}
         />
+
+
+        {/* Architecture */}
 
         <Route
           path="/architecture"
           element={<Architecture />}
         />
 
+
+        {/* Dependency */}
+
+        <Route
+          path="/dependency"
+          element={<Dependency />}
+        />
+
+
+        {/* Security */}
+
+        <Route
+          path="/security"
+          element={<Security />}
+        />
+
+
+        {/* Code Quality */}
+
+        <Route
+          path="/quality"
+          element={<Quality />}
+        />
+
+
+        {/* Bug Fix */}
+
+        <Route
+          path="/bugfix"
+          element={<BugFix />}
+        />
+
+
+        {/* Explain Code */}
+
+        <Route
+          path="/explain"
+          element={<Explain />}
+        />
+
+
+        {/* History */}
+
         <Route
           path="/history"
           element={<History />}
         />
+
+
+        {/* History Details */}
 
         <Route
           path="/history/:id"
           element={<HistoryDetails />}
         />
 
+
+        {/* Profile */}
+
         <Route
           path="/profile"
           element={<Profile />}
         />
+
+
+        {/* Settings */}
 
         <Route
           path="/settings"
@@ -136,7 +204,9 @@ function App() {
 
       </Route>
 
-      {/* 404 */}
+
+      {/* ---------------- 404 ---------------- */}
+
       <Route
         path="*"
         element={<NotFound />}
