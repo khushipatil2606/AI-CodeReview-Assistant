@@ -1,4 +1,5 @@
-import { Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -21,7 +22,24 @@ import HistoryDetails from "./pages/HistoryDetails";
 import BugFix from "./pages/BugFix";
 import MainLayout from "./layouts/MainLayout";
 
+
 function App() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Save GitHub OAuth token after login
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get("token");
+
+    if (token) {
+      localStorage.setItem("github_token", token);
+
+      // Remove token from the browser URL
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location, navigate]);
+
   return (
     <Routes>
 
@@ -40,35 +58,47 @@ function App() {
           path="/repositories"
           element={<Repositories />}
         />
+
         <Route
           path="/quality"
           element={<Quality />}
         />
+
         <Route
           path="/repository/:owner/:repo"
           element={<RepositoryDetails />}
         />
+
         <Route
           path="/security"
           element={<Security />}
         />
+
         <Route
           path="/commits/:owner/:repo"
           element={<Commits />}
         />
-        <Route path="/bugfix" element={<BugFix />} />
+
+        <Route
+          path="/bugfix"
+          element={<BugFix />}
+        />
+
         <Route
           path="/explain"
           element={<Explain />}
         />
+
         <Route
           path="/pullrequests"
           element={<PullRequests />}
         />
+
         <Route
           path="/dependency"
           element={<Dependency />}
         />
+
         <Route
           path="/review"
           element={<Review />}
@@ -88,7 +118,12 @@ function App() {
           path="/history"
           element={<History />}
         />
-        <Route path="/history/:id" element={<HistoryDetails />} />
+
+        <Route
+          path="/history/:id"
+          element={<HistoryDetails />}
+        />
+
         <Route
           path="/profile"
           element={<Profile />}

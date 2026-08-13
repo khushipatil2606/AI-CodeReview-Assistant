@@ -1,8 +1,29 @@
 const API = import.meta.env.VITE_API_URL;
 
+const getToken = (): string | null => {
+  return localStorage.getItem("github_token");
+};
+
+const authHeaders = (): HeadersInit => {
+  const token = getToken();
+
+  if (!token) {
+    return {};
+  }
+
+  return {
+    Authorization: `Bearer ${token}`,
+  };
+};
+
 // ---------------- Repositories ----------------
 export async function getRepositories() {
-  const response = await fetch(`${API}/github/repositories`);
+  const response = await fetch(
+    `${API}/github/repositories`,
+    {
+      headers: authHeaders(),
+    }
+  );
 
   if (!response.ok) {
     throw new Error("Failed to fetch repositories.");
@@ -17,7 +38,10 @@ export async function getPullRequests(
   repo: string
 ) {
   const response = await fetch(
-    `${API}/github/pulls/${owner}/${repo}`
+    `${API}/github/pulls/${owner}/${repo}`,
+    {
+      headers: authHeaders(),
+    }
   );
 
   if (!response.ok) {
@@ -30,7 +54,10 @@ export async function getPullRequests(
 // ---------------- Profile ----------------
 export async function getProfile() {
   const response = await fetch(
-    `${API}/github/profile`
+    `${API}/github/profile`,
+    {
+      headers: authHeaders(),
+    }
   );
 
   if (!response.ok) {
