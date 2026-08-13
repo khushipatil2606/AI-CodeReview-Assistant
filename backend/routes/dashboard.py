@@ -14,24 +14,32 @@ github = GitHubService()
 @router.get("")
 def dashboard():
 
-    repos = github.get_repositories()
+    # Get GitHub repositories
+    repos = github.get_repositories() or []
 
-    profile = github.get_profile()
+    # Get GitHub profile
+    profile = github.get_profile() or {}
 
+    # Get review history from database
     db = SessionLocal()
 
-    reviews = (
-        db.query(ReviewHistory)
-        .order_by(ReviewHistory.id.desc())
-        .all()
-    )
-
-    db.close()
+    try:
+        reviews = (
+            db.query(ReviewHistory)
+            .order_by(ReviewHistory.id.desc())
+            .all()
+        )
+    finally:
+        db.close()
 
     return {
         "repositories": len(repos),
-        "followers": profile["followers"],
+
+        # Use .get() so missing GitHub fields don't crash the dashboard
+        "followers": profile.get("followers", 0),
+
         "reviews": len(reviews),
+
         "latest_reviews": [
             {
                 "score": r.score,
@@ -39,5 +47,6 @@ def dashboard():
             }
             for r in reviews[:5]
         ],
+
         "latest_repositories": repos[:5]
     }
