@@ -4,15 +4,21 @@ from config import GITHUB_TOKEN
 
 class GitHubService:
 
-    def __init__(self):
-        if GITHUB_TOKEN:
-            self.github = Github(GITHUB_TOKEN)
+    def __init__(self, token=None):
+
+        # Use OAuth token if provided.
+        # Otherwise fall back to the backend token.
+        self.token = token or GITHUB_TOKEN
+
+        if self.token:
+            self.github = Github(self.token)
         else:
             self.github = None
 
     # ---------------- GET USER ----------------
 
     def get_user(self):
+
         if not self.github:
             return None
 
@@ -70,14 +76,20 @@ class GitHubService:
 
     # ---------------- GET REPOSITORY DETAILS ----------------
 
-    def get_repository_details(self, owner, repo_name):
+    def get_repository_details(
+        self,
+        owner,
+        repo_name
+    ):
 
         if not self.github:
             return {
                 "error": "GitHub token not configured."
             }
 
-        repo = self.github.get_repo(f"{owner}/{repo_name}")
+        repo = self.github.get_repo(
+            f"{owner}/{repo_name}"
+        )
 
         return {
             "name": repo.name,
@@ -96,14 +108,20 @@ class GitHubService:
 
     # ---------------- GET COMMITS ----------------
 
-    def get_commits(self, owner, repo_name):
+    def get_commits(
+        self,
+        owner,
+        repo_name
+    ):
 
         if not self.github:
             return {
                 "error": "GitHub token not configured."
             }
 
-        repo = self.github.get_repo(f"{owner}/{repo_name}")
+        repo = self.github.get_repo(
+            f"{owner}/{repo_name}"
+        )
 
         commits = repo.get_commits()
 
@@ -120,7 +138,9 @@ class GitHubService:
                 "sha": commit.sha[:7],
                 "message": commit.commit.message,
                 "author": commit.commit.author.name,
-                "date": str(commit.commit.author.date),
+                "date": str(
+                    commit.commit.author.date
+                ),
                 "url": commit.html_url
             })
 
@@ -130,16 +150,24 @@ class GitHubService:
 
     # ---------------- GET PULL REQUESTS ----------------
 
-    def get_pull_requests(self, owner, repo):
+    def get_pull_requests(
+        self,
+        owner,
+        repo
+    ):
 
         if not self.github:
             return {
                 "error": "GitHub token not configured."
             }
 
-        repository = self.github.get_repo(f"{owner}/{repo}")
+        repository = self.github.get_repo(
+            f"{owner}/{repo}"
+        )
 
-        pulls = repository.get_pulls(state="open")
+        pulls = repository.get_pulls(
+            state="open"
+        )
 
         pull_requests = []
 
@@ -158,12 +186,19 @@ class GitHubService:
 
     # ---------------- GET PULL REQUEST FILES ----------------
 
-    def get_pull_request_files(self, owner, repo_name, pr_number):
+    def get_pull_request_files(
+        self,
+        owner,
+        repo_name,
+        pr_number
+    ):
 
         if not self.github:
             return []
 
-        repo = self.github.get_repo(f"{owner}/{repo_name}")
+        repo = self.github.get_repo(
+            f"{owner}/{repo_name}"
+        )
 
         pull = repo.get_pull(pr_number)
 
@@ -181,12 +216,18 @@ class GitHubService:
 
     # ---------------- GET REPOSITORY STRUCTURE ----------------
 
-    def get_repository_structure(self, owner, repo_name):
+    def get_repository_structure(
+        self,
+        owner,
+        repo_name
+    ):
 
         if not self.github:
             return []
 
-        repo = self.github.get_repo(f"{owner}/{repo_name}")
+        repo = self.github.get_repo(
+            f"{owner}/{repo_name}"
+        )
 
         contents = repo.get_contents("")
 
@@ -199,14 +240,16 @@ class GitHubService:
             if file.type == "dir":
 
                 try:
-                    contents.extend(repo.get_contents(file.path))
+                    contents.extend(
+                        repo.get_contents(file.path)
+                    )
                 except Exception:
                     pass
 
             else:
 
                 try:
-                    # Skip binary or large files
+
                     if file.size > 500000:
                         continue
 

@@ -1,52 +1,71 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
+
 from services.github_service import GitHubService
 from database.database import SessionLocal
 from database.models import ReviewHistory
+
 
 router = APIRouter(
     prefix="/dashboard",
     tags=["Dashboard"]
 )
 
-github = GitHubService()
+
+def get_github_service(request: Request):
+
+    auth_header = request.headers.get("Authorization")
+
+    token = None
+
+    if auth_header and auth_header.startswith("Bearer "):
+        token = auth_header.replace("Bearer ", "").strip()
+
+    return GitHubService(token)
 
 
 @router.get("")
-def dashboard():
+def dashboard(request: Request):
 
-    # Get GitHub repositories
-    repos = github.get_repositories() or []
+    github = get_github_service(request)
 
-    # Get GitHub profile
-    profile = github.get_profile() or {}
+    repos = github.get_repositories()
+    profile = github.get_profile()
 
-    # Get review history from database
+    # Handle GitHub API errors safely
+    if isinstance(repos, dict):
+        repos = []
+
+    if isinstance(profile, dict):
+        followers = profile.get("followers", 0)
+    else:
+        followers = 0
+
     db = SessionLocal()
 
     try:
+
         reviews = (
             db.query(ReviewHistory)
             .order_by(ReviewHistory.id.desc())
             .all()
         )
+
+        return {
+            "repositories": len(repos),
+            "followers": followers,
+            "reviews": len(reviews),
+
+            "latest_reviews": [
+                {
+                    "score": r.score,
+                    "repository": r.repository
+                }
+                for r in reviews[:5]
+            ],
+
+            "latest_repositories": repos[:5]
+        }
+
     finally:
+
         db.close()
-
-    return {
-        "repositories": len(repos),
-
-        # Use .get() so missing GitHub fields don't crash the dashboard
-        "followers": profile.get("followers", 0),
-
-        "reviews": len(reviews),
-
-        "latest_reviews": [
-            {
-                "score": r.score,
-                "repository": r.repository
-            }
-            for r in reviews[:5]
-        ],
-
-        "latest_repositories": repos[:5]
-    }
